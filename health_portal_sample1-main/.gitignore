@@ -1,0 +1,17 @@
+# Django
+*.pyc
+__pycache__/
+*.sqlite3
+staticfiles/
+*.h5
+*.keras
+*.pkl
+.env
+
+# React
+frontend/node_modules/
+frontend/build/
+frontend/.env
+
+# Virtual environment
+.venv/
