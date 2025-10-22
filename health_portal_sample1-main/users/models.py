@@ -1,9 +1,12 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
-from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    # Your custom fields here (if any)
+    # Location fields for nearby hospital search
+    latitude = models.FloatField(null=True, blank=True)
+    longitude = models.FloatField(null=True, blank=True)
+    address = models.TextField(blank=True)
+
     groups = models.ManyToManyField(
         'auth.Group',
         related_name='custom_user_groups',  # Unique name to avoid clash

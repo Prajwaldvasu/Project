@@ -2,8 +2,10 @@ from math import radians, cos, sin, asin, sqrt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
-from .models import Hospital, Doctor, Specialty
-from .serializers import DoctorSerializer, HospitalSerializer
+from rest_framework import status
+from .models import Hospital, Doctor, Specialty, Appointment
+from .serializers import DoctorSerializer, HospitalSerializer, AppointmentSerializer
+from datetime import datetime
 
 
 def haversine_distance(lat1, lon1, lat2, lon2):
@@ -23,8 +25,15 @@ def search_providers(request):
 	lon = request.GET.get('lon')
 	disease = request.GET.get('disease')
 	radius_km = float(request.GET.get('radius_km', 20))
+
+	# If lat/lon not provided, try to use user's location if authenticated
 	if lat is None or lon is None:
-		return Response({'error': 'lat and lon required'}, status=400)
+		if request.user.is_authenticated and request.user.latitude and request.user.longitude:
+			lat = request.user.latitude
+			lon = request.user.longitude
+		else:
+			return Response({'error': 'lat and lon required'}, status=400)
+
 	try:
 		lat = float(lat)
 		lon = float(lon)
@@ -67,6 +76,29 @@ def search_providers(request):
 
 	results.sort(key=lambda x: x.get('distance_km', 9999))
 	return Response({'count': len(results), 'results': results})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def book_appointment(request):
+    serializer = AppointmentSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save(patient=request.user)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def get_appointment_by_token(request, token):
+    try:
+        appointment = Appointment.objects.get(token=token)
+        serializer = AppointmentSerializer(appointment)
+        return Response(serializer.data)
+    except Appointment.DoesNotExist:
+        return Response({'error': 'Appointment not found'}, status=status.HTTP_404_NOT_FOUND)
+
+
 from django.shortcuts import render
 
 # Create your views here.

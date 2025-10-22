@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jyc%i03m-npci+9cpdpo%43#)!0ok@kw2(=u!2tk86a0@248o*
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'testserver']
 
 
 # Application definition
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users',
     'predictions',
-    # 'appointments',
+    'health_portal.appointments',
 ]
 
 MIDDLEWARE = [

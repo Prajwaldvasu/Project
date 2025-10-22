@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { CssBaseline, ThemeProvider, createTheme, AppBar, Toolbar, Typography, Container, Switch, Box, Button } from '@mui/material';
-import { Brightness4, Brightness7, Home, Analytics } from '@mui/icons-material';
+import { Brightness4, Brightness7, Home, Analytics, LocalHospital } from '@mui/icons-material';
 import LandingPage from './components/LandingPage';
 import SymptomForm from './components/SymptomForm';
+import HospitalSearch from './components/HospitalSearch';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -95,6 +96,9 @@ function App() {
               <Button href="/predict" color="inherit">
                 Predict
               </Button>
+              <Button href="/hospitals" startIcon={<LocalHospital />} color="inherit">
+                Hospitals
+              </Button>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 2 }}>
                 <Brightness4 sx={{ fontSize: 20 }} />
                 <Switch
@@ -115,6 +119,7 @@ function App() {
               <SymptomForm />
             </Container>
           } />
+          <Route path="/hospitals" element={<HospitalSearch />} />
         </Routes>
       </Router>
     </ThemeProvider>

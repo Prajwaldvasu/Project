@@ -41,3 +41,10 @@ class Appointment(models.Model):
     notes = models.TextField(blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
+    token = models.CharField(max_length=100, unique=True, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        if not self.token:
+            import uuid
+            self.token = str(uuid.uuid4())[:8].upper()  # Generate a short unique token
+        super().save(*args, **kwargs)

@@ -24,7 +24,18 @@ class DoctorSerializer(serializers.ModelSerializer):
 
 
 class AppointmentSerializer(serializers.ModelSerializer):
+    is_repeat_patient = serializers.SerializerMethodField()
+
     class Meta:
         model = Appointment
-        fields = ['id', 'patient', 'doctor', 'hospital', 'scheduled_for', 'notes', 'status', 'created_at']
-        read_only_fields = ['patient', 'status', 'created_at']
+        fields = ['id', 'patient', 'doctor', 'hospital', 'scheduled_for', 'notes', 'status', 'created_at', 'token', 'is_repeat_patient']
+        read_only_fields = ['patient', 'status', 'created_at', 'token', 'is_repeat_patient']
+
+    def get_is_repeat_patient(self, obj):
+        # Check if the patient has any previous appointments with the same doctor
+        previous_appointments = Appointment.objects.filter(
+            patient=obj.patient,
+            doctor=obj.doctor,
+            created_at__lt=obj.created_at
+        ).exists()
+        return previous_appointments
